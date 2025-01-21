@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  skip_before_action :authenticate_request!, only: [:create]
   before_action :find_user, only: [:show, :update, :destroy]
 
   def index 
@@ -41,7 +42,7 @@ class UsersController < ApplicationController
 
   def find_user
     @user = User.find(params[:id])
-    rescue ActiveRecord::RecordNotFound
-      render json: { error: 'User not found' }, status: :not_found
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'User not found' }, status: :not_found
   end
 end
