@@ -5,5 +5,6 @@ Rails.application.routes.draw do
     resources :posts, only: [:index, :show, :create, :update, :destroy]
     resources :users, only: [:create]
     resources :sessions, only: [:create]
+    resources :password_resets, only: [:create, :edit, :update]
   end
 end
