@@ -4,3 +4,10 @@
 require_relative "config/application"
 
 Rails.application.load_tasks
+
+namespace :rubocop do
+  desc "Run rubocop with autocorrect"
+  task :fix do
+    sh "rubocop --autocorrect"
+  end
+end
