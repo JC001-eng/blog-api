@@ -19,6 +19,11 @@ class PostsController < ApplicationController
     post = current_user.posts.new(post_params)
     post.media.attach(params[:media]) if params[:media]
     if post.save
+      if params[:post][:media].present?
+        params[:post][:media].each do |file|
+          post.media.attach(file)
+        end
+      end
       render json: post, status: :created
     else
       render json: { error: post.errors.full_messages }, status: :unprocessable_entity
@@ -47,6 +52,6 @@ class PostsController < ApplicationController
   private
 
   def post_params
-    params.require(:post).permit(:title, :content)
+    params.require(:post).permit(:title, :content, :media[])
   end
 end
