@@ -1,4 +1,6 @@
 class UploadsController < ApplicationController
+  before_action :authenticate_request!
+
   def create
     if params[:file].present?
       uploaded_file = params[:file]
