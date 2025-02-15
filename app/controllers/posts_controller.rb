@@ -4,13 +4,13 @@ class PostsController < ApplicationController
   before_action :authenticate_request!, only: [ :create, :destroy ]
 
   def index
-    posts = Post.all
-    render json: posts
+    posts = Post.includes(:user).all.order(created_at: :desc)
+    render json: posts.as_json(include: { user: { only: :username } })
   end
 
   def show
     post = Post.find(params[:id])
-    render json: post
+    render json: post.as_json(include: { user: { only: :username } })
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Post not found" }, status: :not_found
   end
@@ -18,13 +18,15 @@ class PostsController < ApplicationController
   def create
     post = current_user.posts.new(post_params)
     post.media.attach(params[:media]) if params[:media]
-    if post.save
-      if params[:post][:media].present?
-        params[:post][:media].each do |file|
-          post.media.attach(file)
-        end
+
+    if params[:post][:media].present?
+      params[:post][:media].each do |file|
+        post.media.attach(file)
       end
-      render json: post, status: :created
+    end
+
+    if post.save
+      render json: post.as_json(include: { user: { only: :username } }), status: :created
     else
       render json: { error: post.errors.full_messages }, status: :unprocessable_entity
     end
